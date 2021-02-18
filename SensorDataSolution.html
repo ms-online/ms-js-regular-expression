@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JS正则表达式</title>
+
+    <!-- Bootstrap CSS样式 -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
+      crossorigin="anonymous"
+    />
+  </head>
+
+  <body class="container">
+    <h2>Javascript正则表达式测试工具</h2>
+    <br />
+    <div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <span class="input-group-text" id="basic-addon1">模式</span>
+      </div>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="匹配模式"
+        aria-label="匹配模式"
+        aria-describedby="basic-addon1"
+        id="searchPattern"
+      />
+    </div>
+
+    <div class="form-check-inline">
+      <input type="checkbox" class="form-check-input" id="globalCheck" />
+      <label class="form-check-label text-secondary" for="globalCheck"
+        >全局搜索 (g)</label
+      >
+    </div>
+    <div class="form-check-inline">
+      <input
+        type="checkbox"
+        class="form-check-input"
+        id="caseInsensitiveCheck"
+      />
+      <label class="form-check-label text-secondary" for="caseInsensitiveCheck"
+        >忽略大小写 (i)</label
+      >
+    </div>
+    <div class="form-check-inline">
+      <input type="checkbox" class="form-check-input" id="multilineCheck" />
+      <label class="form-check-label text-secondary" for="multilineCheck"
+        >多行模式 (m)</label
+      >
+    </div>
+    <div class="form-check-inline">
+      <input type="checkbox" class="form-check-input" id="newLineCheck" />
+      <label class="form-check-label text-secondary" for="newLineCheck"
+        >(s)圆点匹配包含换行符的所有字符</label
+      >
+    </div>
+    <div class="form-check-inline">
+      <input type="checkbox" class="form-check-input" id="unicodeCheck" />
+      <label class="form-check-label text-secondary" for="unicodeCheck"
+        >Unicode编码 (u)</label
+      >
+    </div>
+
+    <hr />
+    <div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <span class="input-group-text" id="basic-addon1">替换文本</span>
+      </div>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="在此输入替换文本"
+        aria-label="在此输入替换文本"
+        aria-describedby="basic-addon1"
+        id="replacementPattern"
+      />
+    </div>
+    <hr />
+    <div class="input-group">
+      <div class="input-group-prepend">
+        <span class="input-group-text">匹配文本</span>
+      </div>
+      <textarea
+        class="form-control"
+        aria-label="输入待匹配文本"
+        placeholder="输入待匹配文本"
+        id="inputText"
+      ></textarea>
+    </div>
+    <br />
+
+    <button
+      type="button"
+      class="btn btn-outline-secondary"
+      onclick="new_search()"
+    >
+      匹配
+    </button>
+    <button
+      type="button"
+      class="btn btn-outline-secondary"
+      onclick="next_match()"
+    >
+      匹配下一个
+    </button>
+    <button
+      type="button"
+      class="btn btn-outline-secondary"
+      onclick="find_replace()"
+    >
+      替换
+    </button>
+    <button type="button" class="btn btn-outline-secondary" onclick="split()">
+      分割
+    </button>
+    <button
+      type="button"
+      class="btn btn-outline-secondary"
+      onclick="process_sensor_data()"
+    >
+      解析传感数据
+    </button>
+    <hr />
+    <div class="input-group">
+      <div class="input-group-prepend">
+        <span class="input-group-text">匹配结果</span>
+      </div>
+      <textarea
+        class="form-control"
+        aria-label="输出结果"
+        placeholder="输出结果"
+        id="outputText"
+      ></textarea>
+    </div>
+
+    <script>
+      //初始化值
+      let searchPattern = ''
+      let replacementPattern = ''
+      let inputText = ''
+      let globalCheck = ''
+      let caseInsensitiveCheck = ''
+      let multilineCheck = ''
+      let newLineCheck = ''
+      let unicodeCheck = ''
+      //实例化正则对象
+      let re = new RegExp()
+      //输出结果
+      let outputTextArea = document.getElementById('outputText')
+
+      //修饰符函数
+      function flags() {
+        return (
+          globalCheck +
+          caseInsensitiveCheck +
+          multilineCheck +
+          newLineCheck +
+          unicodeCheck
+        )
+      }
+      //输入验证
+      function input_check() {
+        //正则模式
+        searchPattern = document.getElementById('searchPattern').value
+        console.log(searchPattern)
+        //替换模式
+        replacementPattern = document.getElementById('replacementPattern').value
+        console.log(replacementPattern)
+        //输入文本值
+        inputText = document.getElementById('inputText').value
+        console.log(inputText)
+
+        console.log(document.getElementById('outputText').value)
+        //全局g
+        globalCheck = document.getElementById('globalCheck').checked ? 'g' : ''
+        console.log(globalCheck)
+        //大小写
+        caseInsensitiveCheck = document.getElementById('caseInsensitiveCheck')
+          .checked
+          ? 'i'
+          : ''
+        console.log(caseInsensitiveCheck)
+        //多行
+        multilineCheck = document.getElementById('multilineCheck').checked
+          ? 'm'
+          : ''
+        console.log(multilineCheck)
+        //.忽略换行符
+        newLineCheck = document.getElementById('newLineCheck').checked
+          ? 's'
+          : ''
+        console.log(newLineCheck)
+        //unicode编码
+        unicodeCheck = document.getElementById('unicodeCheck').checked
+          ? 'u'
+          : ''
+        console.log(unicodeCheck)
+
+        console.log('修饰符: ', flags())
+      }
+
+      //解析传感数据
+      function process_sensor_data() {
+        //输出结果
+        outputTextArea.value = ''
+
+        //初始化数据转换数组对象
+        let allData = []
+
+        //提取每一行中每天的日期的正则表达式
+        let PATTERN_HEADER = /^(?<year>\d{4})(?<month>\d{2})(?<day>\d{2})/
+        //提取每一行中每天的湿度和温度的正则表达式
+        let PATTERN_DATA = /(?<temperature>\d{4}|NNNN)(?<humidity>\d{3}|NNN)/gi
+
+        //进入数据的匹配和格式转换
+        try {
+          input_check()
+          //使用换行符将获取的输入文本分割为数组保存
+          let inputLines = inputText.split(/\n/g)
+          // console.log(inputLines)
+          //存储每行数据
+          let line = ''
+          //遍历数组中每一项（每天的数据）
+          for (line of inputLines) {
+            //初始化每天的数据对象
+            let dailyData = {}
+            dailyData.dateValue = ''
+            dailyData.temperature = []
+            dailyData.humidity = []
+
+            //日期正则匹配
+            //exec检索匹配项（返回数组）
+            let match = PATTERN_HEADER.exec(line)
+            console.log(match)
+            if (match !== null) {
+              dailyData.dateValue =
+                match.groups['year'] +
+                '-' +
+                match.groups['month'] +
+                '-' +
+                match.groups['day']
+
+              //删除每行当中的日期标头
+              // 先去匹配每天的日期
+              let headerLen = match[0].length
+              line = line.substr(headerLen)
+              //匹配温度和湿度
+              let match_iter = line.matchAll(PATTERN_DATA)
+              //遍历迭代器
+              for (let m of match_iter) {
+                //获取温度和湿度并push到数据格式中
+                dailyData.temperature.push(m.groups['temperature'])
+                dailyData.humidity.push(m.groups['humidity'])
+              }
+              //将每天的数据对象push到完整数组中
+              allData.push(dailyData)
+            }
+          }
+
+          //数据格式转换进行输出
+          outputTextArea.value = JSON.stringify(allData, undefined, 2)
+        } catch (error) {
+          console.log('Error', err.name, err.message)
+          outputTextArea.value += 'Error: ' + err.name + ' ' + err.message
+          return
+        }
+      }
+
+      //匹配函数
+      function new_search() {
+        outputTextArea.value = '匹配值,索引,长度值,运行时间' + '\n'
+
+        try {
+          input_check()
+          re = new RegExp(searchPattern, flags())
+          highlight_match()
+        } catch (err) {
+          console.log('Error: ', err.name, err.message)
+          outputText.value += 'Error: ' + err.name + ' ' + err.message
+          return
+        }
+      }
+
+      //匹配下一个
+      function next_match() {
+        if (re.global) {
+          highlight_match()
+        } else {
+          outputTextArea.value += '结束\n'
+        }
+      }
+      //匹配高亮
+      function highlight_match() {
+        let outputText = ''
+        try {
+          let startTime = Date.now()
+
+          // 查找下一个匹配结果
+          let match = re.exec(inputText)
+
+          let elapsedTime = (Date.now() - startTime) / 1000
+          //输出匹配结果
+          if (match != null) {
+            outputText +=
+              match[0] +
+              ',' +
+              match.index +
+              ',' +
+              match[0].length +
+              ',' +
+              elapsedTime +
+              '\n'
+            //聚焦
+            document.getElementById('inputText').focus()
+            //高亮文本，setSelectionRange方法用于设定<input> 或 <textarea> 元素中当前选中文本的起始和结束位置。
+            document
+              .getElementById('inputText')
+              .setSelectionRange(match.index, match.index + match[0].length)
+
+            // 分组索引
+            for (let i = 1; i < match.length; i++) {
+              outputText += '  分组 [' + i + '] : ' + match[i]
+            }
+
+            if (match.length > 1) outputText += '\n'
+
+            //分组命名
+            let namedGroup = false
+            for (let p in match.groups) {
+              namedGroup = true
+              outputText += '  分组 [' + p + ']: ' + match.groups[p]
+            }
+
+            if (namedGroup) outputText += '\n'
+          } else {
+            outputText += '结束，运行时间为: ' + elapsedTime + '\n'
+          }
+        } catch (err) {
+          console.log('Error: ', err.name, err.message)
+          outputText = 'Error: ' + err.name + ' ' + err.message
+          return
+        } finally {
+          outputTextArea.value += outputText
+        }
+      }
+      //查找替换
+      function find_replace() {
+        try {
+          input_check()
+          re = new RegExp(searchPattern, flags())
+
+          console.log('初始化文本:', inputText)
+
+          let newText = inputText.replace(re, replacementPattern)
+
+          console.log('新文本:', newText)
+
+          outputTextArea.value = newText + '\n'
+        } catch (err) {
+          console.log('Error: ', err.name, err.message)
+          outputText.value += 'Error: ' + err.name + ' ' + err.message
+          return
+        }
+      }
+      //分割
+      function split() {
+        try {
+          input_check()
+          re = new RegExp(searchPattern, flags())
+
+          console.log('初始化文本:', inputText)
+
+          let newText = inputText.split(re)
+
+          console.log('新文本:', newText)
+
+          outputTextArea.value = '[' + newText + ']\n'
+        } catch (err) {
+          console.log('Error: ', err.name, err.message)
+          outputText.value += 'Error: ' + err.name + ' ' + err.message
+          return
+        }
+      }
+    </script>
+  </body>
+</html>

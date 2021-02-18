@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JS正则表达式</title>
+
+    <!-- Bootstrap CSS样式 -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1"
+      crossorigin="anonymous"
+    />
+  </head>
+
+  <body class="container">
+    <h2>JavaScript 正则表达式</h2>
+    <br />
+    <h5 class="text-secondary">正则表达式模式</h5>
+    <div class="btn-group" role="group" aria-label="Basic example">
+      <button
+        onclick="pattern_represenation()"
+        class="btn btn-outline-secondary"
+      >
+        表达模式
+      </button>
+    </div>
+    <hr />
+    <h5 class="text-secondary">使用字符串方法：</h5>
+      <button onclick="string_search()" class="btn btn-outline-secondary">
+        search-搜索
+      </button>
+      <button onclick="string_match()" class="btn btn-outline-secondary">
+        match-字符串匹配
+      </button>
+      <button onclick="string_match_all()" class="btn btn-outline-secondary">
+        matchAll-匹配所有字符串
+      </button>
+    </div>
+
+    <hr />
+    <h5 class="text-secondary">分组</h5>
+    <div class="btn-group" role="group" aria-label="Basic example">
+      <button onclick="groups_indexed()" class="btn btn-outline-secondary">
+        分组 - 索引
+      </button>
+      <button onclick="groups_named()" class="btn btn-outline-secondary">
+        分组 - 命名
+      </button>
+    </div>
+    <hr />
+    <h5 class="text-secondary">查找 & 替换, 分割</h5>
+    <div class="btn-group" role="group" aria-label="Basic example">
+      <button onclick="find_replace()" class="btn btn-outline-secondary">
+        find & replace
+      </button>
+      <button onclick="find_replace_custom()" class="btn btn-outline-secondary">
+        find & replace - 自定义方法
+      </button>
+      <button onclick="split()" class="btn btn-outline-secondary">split</button>
+    </div>
+
+    <hr />
+    <h5 class="text-secondary">使用 RegExp 对象</h5>
+    <div class="btn-group" role="group" aria-label="Basic example">
+      <button
+        onclick="integer_check_using_test()"
+        class="btn btn-outline-secondary"
+      >
+        Test
+      </button>
+      <button onclick="re_exec()" class="btn btn-outline-secondary">
+        Exec
+      </button>
+    </div>
+
+    <hr />
+    <h5 class="text-secondary">输出</h5>
+    <pre style="font-size: large">
+        <p id="output"></p>
+    </pre>
+
+    <script>
+      //JS中正则表达式模式
+      function pattern_represenation(){
+        //字符串 —— 嵌入特殊字符的时候需要用\进行转义
+        //regexp对象 —— /表达式/
+         let pattern_string = 'a\\tb'
+         let pattern_object = /a\tb/
+
+         document.getElementById('output').innerHTML = 
+         '字符串模式：\t' + 
+         pattern_string +
+         '<br>' +
+         '正则对象模式：\t' + 
+         pattern_object.source
+      }
+       // 字符串search
+       function string_search() {
+         // search() 方法 用于检索字符串中指定的子字符串，或检索与正则表达式相匹配的子字符串，并返回子串的起始位置。
+        // 不返回匹配的子字符串或者它的匹配长度。
+
+        //  let  re = /\d+/
+         let pattern_string = '\\d+'
+         let text = 'my name is Summer, I am  26 age!'
+
+         let outputText = ''
+
+         let idx = text.search(pattern_string)
+         if(idx >= 0){
+           outputText = '\t索引值：' + idx + '<br>' + '\t字符值：' + text[idx]
+         }else{
+           outputText = '\t不匹配'
+         }
+         document.getElementById('output').innerHTML = 
+         '字符串模式：' + 
+         pattern_string +
+         '<br>' +
+         '待匹配文本：' + 
+         text +
+         '<br>'+
+         '匹配结果：' +
+         '<br>'+
+         outputText 
+       }
+       //match方法
+      function string_match() {
+        // match() 方法可在字符串内检索指定的值，或找到一个或多个正则表达式的匹配。
+        //默认返回第一个匹配的值
+        let re = /\d+/
+        let text = '成都的邮政编码有：610000，610001，610002，610003'
+        let outputText = ''
+
+       let matches = text.match(re)
+        if(matches){
+          outputText = '\t匹配值为：' + matches
+        }else{
+          outputText = '\t不匹配'
+        }
+        document.getElementById('output').innerHTML = 
+         '字符串模式：' + 
+         re.source +
+         '<br>' +
+         '待匹配文本：' + 
+         text +
+         '<br>'+
+         '匹配结果：' +
+         '<br>'+
+         outputText 
+       
+      }
+      function string_match_all() {
+        // matchAll() 方法返回一个包含所有匹配正则表达式及分组捕获结果的迭代器
+        // 需要全局g修饰符
+        let re = /\d+/g
+        let text = '成都的邮政编码有：610000，610001，610002，610003'
+        let outputText = ''
+
+       let matches = text.matchAll(re)
+      //  let matchesArry = [...matches]
+      //  console.log(matchesArry)
+
+       for(let match of matches) {
+         outputText += '\t匹配值：' + match[0] + '， 索引值：' + match.index + '<br>'
+       }
+
+       if(outputText.length ===0){
+         outputText = '\t不匹配'
+       }
+       document.getElementById('output').innerHTML = 
+         '字符串模式：' + 
+         re.source +
+         '<br>' +
+         '待匹配文本：' + 
+         text +
+         '<br>'+
+         '匹配结果：' +
+         '<br>'+
+         outputText 
+      }
+      //分组-索引
+      function groups_indexed() {
+        let re = /(\d{4})(\d{2})(\d{2})/g
+        let text = '今天的日期是：20210202'
+         let outputText = ''
+
+       let matches = text.matchAll(re)
+
+       for(let match of matches) {
+         outputText += '\t匹配值：' + match[0] + '， 索引值：' + match.index + '<br>'
+         outputText += '\t分组[1]:' + match[1] + '<br>'
+         outputText += '\t分组[2]:' + match[2] + '<br>'
+         outputText += '\t分组[3]:' + match[3] + '<br>'
+       }
+
+       if(outputText.length ===0){
+         outputText = '\t不匹配'
+       }
+       document.getElementById('output').innerHTML = 
+         '字符串模式：' + 
+         re.source +
+         '<br>' +
+         '待匹配文本：' + 
+         text +
+         '<br>'+
+         '匹配结果：' +
+         '<br>'+
+         outputText 
+
+      }
+       //分组-命名
+      function groups_named() {
+        let re = /(?<year>\d{4})(?<month>\d{2})(?<day>\d{2})/g
+        let text = '今天的日期是：20210202'
+         let outputText = ''
+
+       let matches = text.matchAll(re)
+
+       for(let match of matches) {
+         outputText += '\t匹配值：' + match[0] + '， 索引值：' + match.index + '<br>'
+         for(let i = 0; i < match.length; i++){
+           outputText += '\t分组['+i+']:' + match[i] + '<br>'
+         }
+         
+         for(let p in match.groups){
+            outputText += '\t分组['+p+']:' + match.groups[p] + '<br>'
+         }
+      
+       }
+
+       if(outputText.length ===0){
+         outputText = '\t不匹配'
+       }
+       document.getElementById('output').innerHTML = 
+         '字符串模式：' + 
+         re.source +
+         '<br>' +
+         '待匹配文本：' + 
+         text +
+         '<br>'+
+         '匹配结果：' +
+         '<br>'+
+         outputText 
+
+      }
+        //替换
+        function find_replace() {
+          let re = /(?<year>\d{4})(?<month>\d{2})(?<day>\d{2})/g
+          let text = '今天的日期是：20210202, 春节放假时间：20210210'
+          let replace_pattern = '$<month>-$<day>-$<year>'
+
+           let new_text =  text.replace(re, replace_pattern)
+           document.getElementById('output').innerHTML = 
+         '字符串模式：' + 
+         re.source +
+         '<br>' +
+         '待匹配文本：' + 
+         text +
+         '<br>'+
+         '匹配结果：' +
+         '<br>'+
+         new_text
+
+
+        }
+        //格式化日期
+        function format_date(match, year, month, day, offset, string, groups) {
+           let new_date = new Date(year, month, day)
+
+           return new_date.toDateString()
+        }
+        //替换-自定义
+        function find_replace_custom() {
+          let re = /(?<year>\d{4})(?<month>\d{2})(?<day>\d{2})/g
+          let text = '今天的日期是：20210202, 春节放假时间：20210210'
+
+           let new_text =  text.replace(re, format_date)
+           document.getElementById('output').innerHTML = 
+         '字符串模式：' + 
+         re.source +
+         '<br>' +
+         '待匹配文本：' + 
+         text +
+         '<br>'+
+         '匹配结果：' +
+         '<br>'+
+         new_text
+        }
+        //分割
+        function split() {
+          let re = /;/g
+          let text = 'a;b;c;d'
+
+          let new_text = text.split(re)
+          console.log(new_text)
+          document.getElementById('output').innerHTML = 
+         '字符串模式：' + 
+         re.source +
+         '<br>' +
+         '待匹配文本：' + 
+         text +
+         '<br>'+
+         '匹配结果：' +
+         '<br>['+ 
+         new_text
+         +']'
+        }
+        //regexp对象-test方法
+        function is_integer_regexp_test(text) {
+          // test() 方法用于检测一个字符串是否匹配某个模式，如果字符串中含有匹配的文本，则返回 true，否则返回 false
+          let re = /^\d+$/
+          let result =  re.test(text)
+          return result
+        }
+        function integer_check_using_test() {
+          let text = '123'
+          let check = is_integer_regexp_test(text)
+          document.getElementById('output').innerHTML = 
+         '待匹配文本：' + 
+         text +
+         '<br>'+
+         '是否为整数：' +
+         '<br>'+ 
+          check
+        }
+         //regexp对象-exec方法
+        function re_exec() {
+          // exec() 方法用于检索字符串中的正则表达式的匹配。该函数返回一个数组，其中存放匹配的结果。如果未找到匹配，则返回值为 null。
+          let re = /(?<year>\d{4})(?<month>\d{2})(?<day>\d{2})/g
+          let text = '今天的日期是：20210202, 春节放假时间：20210210'
+          let outputText = ''
+
+          let match
+
+       while((match = re.exec(text)) !== null) {
+         console.log(match)
+         outputText += '\t匹配值：' + match[0] + '， 索引值：' + match.index + '<br>'
+         for(let i = 0; i < match.length; i++){
+           outputText += '\t分组['+i+']:' + match[i] + '<br>'
+         }
+         
+         for(let p in match.groups){
+            outputText += '\t分组['+p+']:' + match.groups[p] + '<br>'
+         }
+      
+       }
+
+       if(outputText.length ===0){
+         outputText = '\t不匹配'
+       }
+       document.getElementById('output').innerHTML = 
+         '字符串模式：' + 
+         re.source +
+         '<br>' +
+         '待匹配文本：' + 
+         text +
+         '<br>'+
+         '匹配结果：' +
+         '<br>'+
+         outputText 
+        }
+    </script>
+  </body>
+</html>
